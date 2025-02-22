@@ -73,7 +73,7 @@ if "winner" not in st.session_state:
 if "clicked_index" not in st.session_state:
     st.session_state.clicked_index = None  # Track clicked cell
 
-# CSS for proper grid layout (ensures no extra buttons)
+# CSS for proper grid layout
 st.markdown(
     """
     <style>
@@ -86,6 +86,7 @@ st.markdown(
         display: grid;
         grid-template-columns: 100px 100px 100px;
         gap: 5px;
+        justify-content: center;
     }
     .cell {
         width: 100px;
@@ -112,10 +113,13 @@ st.markdown(
 # Show player turn
 st.write(f"### Your Turn: {'X (You)' if st.session_state.turn == 'X' else 'O (AI)'}")
 
-# Create a 3x3 clickable Tic Tac Toe grid **without extra buttons**
+# Create a 3x3 Tic Tac Toe grid
 clicked_index = None
+grid = [[" " for _ in range(3)] for _ in range(3)]
+
+# Use Streamlit columns for a structured 3x3 board
+cols = st.columns(3)
 for row in range(3):
-    cols = st.columns(3)
     for col in range(3):
         index = row * 3 + col
         with cols[col]:
@@ -126,11 +130,11 @@ for row in range(3):
                 st.markdown(f"<div class='cell'>{st.session_state.board[index]}</div>", unsafe_allow_html=True)
 
 # Handle player move (if a cell was clicked)
-if clicked_index is not None:
+if clicked_index is not None and st.session_state.board[clicked_index] == " ":
     st.session_state.board[clicked_index] = "X"
     st.session_state.turn = "O"
 
-# AI Move
+# AI Move (automatically after player)
 if st.session_state.turn == "O" and st.session_state.winner is None:
     ai_move = best_move(st.session_state.board)
     if ai_move is not None:
