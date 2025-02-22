@@ -1,6 +1,7 @@
 const board = document.getElementById("board");
 const cells = document.querySelectorAll(".cell");
 const restartBtn = document.getElementById("restart");
+const difficultySelect = document.getElementById("difficulty");
 
 let gameBoard = ["", "", "", "", "", "", "", "", ""];
 let currentPlayer = "X";
@@ -50,7 +51,7 @@ function handlePlayerMove(index) {
     }
 }
 
-// AI Move Function
+// AI Move Function (based on difficulty selection)
 function aiMove() {
     if (!gameActive) return;
 
@@ -68,6 +69,75 @@ function aiMove() {
     }
 }
 
+// Function to determine AI move based on difficulty
+function bestMove() {
+    let difficulty = difficultySelect.value;
+
+    if (difficulty === "easy") {
+        return randomMove();  // AI picks random move
+    } else if (difficulty === "medium") {
+        return Math.random() < 0.5 ? minimaxMove() : randomMove(); // 50% chance of random move
+    } else {
+        return minimaxMove();  // Always uses Minimax
+    }
+}
+
+// Random move function (Easy AI)
+function randomMove() {
+    let availableMoves = gameBoard.map((cell, index) => (cell === "" ? index : null)).filter(i => i !== null);
+    return availableMoves.length > 0 ? availableMoves[Math.floor(Math.random() * availableMoves.length)] : null;
+}
+
+// Minimax move function (Hard AI)
+function minimaxMove() {
+    let bestScore = -Infinity;
+    let move = null;
+    for (let i = 0; i < 9; i++) {
+        if (gameBoard[i] === "") {
+            gameBoard[i] = "O";
+            let score = minimax(gameBoard, false);
+            gameBoard[i] = "";
+            if (score > bestScore) {
+                bestScore = score;
+                move = i;
+            }
+        }
+    }
+    return move;
+}
+
+// Minimax algorithm (AI decision-making)
+function minimax(board, isMaximizing) {
+    let result = checkWinner();
+    if (result === "X") return -1;
+    if (result === "O") return 1;
+    if (result === "draw") return 0;
+
+    if (isMaximizing) {
+        let bestScore = -Infinity;
+        for (let i = 0; i < 9; i++) {
+            if (board[i] === "") {
+                board[i] = "O";
+                let score = minimax(board, false);
+                board[i] = "";
+                bestScore = Math.max(score, bestScore);
+            }
+        }
+        return bestScore;
+    } else {
+        let bestScore = Infinity;
+        for (let i = 0; i < 9; i++) {
+            if (board[i] === "") {
+                board[i] = "X";
+                let score = minimax(board, true);
+                board[i] = "";
+                bestScore = Math.min(score, bestScore);
+            }
+        }
+        return bestScore;
+    }
+}
+
 // Function to update score
 function updateScore(winner) {
     if (winner === "X") {
@@ -79,12 +149,6 @@ function updateScore(winner) {
         localStorage.setItem("aiWins", aiWins);
         document.getElementById("ai-score").textContent = aiWins;
     }
-}
-
-// Function to pick AI move
-function bestMove() {
-    let availableMoves = gameBoard.map((cell, index) => (cell === "" ? index : null)).filter(i => i !== null);
-    return availableMoves.length > 0 ? availableMoves[Math.floor(Math.random() * availableMoves.length)] : null;
 }
 
 // Restart game
