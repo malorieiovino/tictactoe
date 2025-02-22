@@ -3,7 +3,6 @@ const cells = document.querySelectorAll(".cell");
 const restartBtn = document.getElementById("restart");
 const difficultySelect = document.getElementById("difficulty");
 
-// Initialize the board and game state
 let gameBoard = ["", "", "", "", "", "", "", "", ""];
 let currentPlayer = "X";
 let gameActive = true;
@@ -41,7 +40,81 @@ function highlightWinningCells(cellsToHighlight) {
     });
 }
 
-// Minimax AI function (Hard Mode)
+// Function to handle player move
+function handlePlayerMove(index) {
+    if (gameBoard[index] === "" && gameActive) {
+        gameBoard[index] = "X";
+        cells[index].textContent = "X";
+
+        let winner = checkWinner();
+        if (winner) {
+            updateScore(winner);
+            setTimeout(() => alert(`${winner} Wins!`), 100);
+            gameActive = false;
+            return;
+        }
+
+        // Delay AI move slightly
+        setTimeout(() => aiMove(), 300);
+    }
+}
+
+// AI move based on difficulty
+function aiMove() {
+    if (!gameActive) return;
+    
+    let move = bestMove();
+    if (move !== undefined) {
+        gameBoard[move] = "O";
+        cells[move].textContent = "O";
+    }
+
+    let winner = checkWinner();
+    if (winner) {
+        updateScore(winner);
+        setTimeout(() => alert(`${winner} Wins!`), 100);
+        gameActive = false;
+    }
+}
+
+// Function to decide AI move based on difficulty
+function bestMove() {
+    let difficulty = difficultySelect.value;
+
+    if (difficulty === "easy") {
+        return randomMove();
+    } else if (difficulty === "medium") {
+        return Math.random() < 0.5 ? minimaxMove() : randomMove();
+    } else {
+        return minimaxMove();
+    }
+}
+
+// Random move function (Easy AI)
+function randomMove() {
+    let availableMoves = gameBoard.map((cell, index) => (cell === "" ? index : null)).filter(i => i !== null);
+    return availableMoves.length > 0 ? availableMoves[Math.floor(Math.random() * availableMoves.length)] : null;
+}
+
+// Minimax move function (Hard AI)
+function minimaxMove() {
+    let bestScore = -Infinity;
+    let move;
+    for (let i = 0; i < 9; i++) {
+        if (gameBoard[i] === "") {
+            gameBoard[i] = "O";
+            let score = minimax(gameBoard, false);
+            gameBoard[i] = "";
+            if (score > bestScore) {
+                bestScore = score;
+                move = i;
+            }
+        }
+    }
+    return move;
+}
+
+// Minimax algorithm (AI decision-making)
 function minimax(board, isMaximizing) {
     let result = checkWinner();
     if (result === "X") return -1;
@@ -73,63 +146,7 @@ function minimax(board, isMaximizing) {
     }
 }
 
-// Function to make AI move based on difficulty
-function bestMove() {
-    let difficulty = difficultySelect.value;
-
-    if (difficulty === "easy") {
-        return randomMove(); // AI picks random move
-    } else if (difficulty === "medium") {
-        return Math.random() < 0.5 ? minimaxMove() : randomMove(); // 50% chance of random move
-    } else {
-        return minimaxMove(); // Always uses Minimax
-    }
-}
-
-// Random move function (Easy AI)
-function randomMove() {
-    let availableMoves = gameBoard.map((cell, index) => (cell === "" ? index : null)).filter(i => i !== null);
-    return availableMoves[Math.floor(Math.random() * availableMoves.length)];
-}
-
-// Minimax move function (Hard AI)
-function minimaxMove() {
-    return minimax(gameBoard, false) !== null ? minimax(gameBoard, false) : randomMove();
-}
-
-// Player move
-cells.forEach(cell => {
-    cell.addEventListener("click", () => {
-        let index = cell.getAttribute("data-index");
-        if (gameBoard[index] === "" && gameActive) {
-            gameBoard[index] = "X";
-            cell.textContent = "X";
-
-            let winner = checkWinner();
-            if (winner) {
-                updateScore(winner);
-                setTimeout(() => alert(`${winner} Wins!`), 100);
-                gameActive = false;
-                return;
-            }
-
-            let aiMove = bestMove();
-            if (aiMove !== undefined) {
-                gameBoard[aiMove] = "O";
-                cells[aiMove].textContent = "O";
-            }
-
-            winner = checkWinner();
-            if (winner) {
-                updateScore(winner);
-                setTimeout(() => alert(`${winner} Wins!`), 100);
-                gameActive = false;
-            }
-        }
-    });
-});
-
-// Function to update scores
+// Function to update score
 function updateScore(winner) {
     if (winner === "X") {
         playerWins++;
@@ -144,12 +161,19 @@ function updateScore(winner) {
 
 // Restart game
 restartBtn.addEventListener("click", () => {
-    gameBoard.fill("");
+    gameBoard = ["", "", "", "", "", "", "", "", ""];
     cells.forEach(cell => {
         cell.textContent = "";
         cell.classList.remove("win");
     });
     gameActive = true;
+});
+
+// Attach event listeners to all cells
+cells.forEach(cell => {
+    cell.addEventListener("click", () => {
+        handlePlayerMove(cell.getAttribute("data-index"));
+    });
 });
 
 // Dark Mode Toggle
@@ -163,4 +187,5 @@ document.getElementById("toggle-theme").addEventListener("click", () => {
     document.body.classList.toggle("light-mode");
     localStorage.setItem("darkMode", isDarkMode);
 });
+
 
