@@ -40,16 +40,6 @@ body {
     transform: scale(1.05);
 }
 
-.win {
-    background-color: green !important;
-    color: white;
-    animation: blink 0.5s infinite alternate;
-}
-
-@keyframes blink {
-    from { opacity: 1; }
-    to { opacity: 0.5; }
-}
 
 /* Buttons */
 button {
