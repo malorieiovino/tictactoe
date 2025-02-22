@@ -26,6 +26,7 @@ function checkWinner() {
     for (let pattern of winPatterns) {
         const [a, b, c] = pattern;
         if (gameBoard[a] && gameBoard[a] === gameBoard[b] && gameBoard[a] === gameBoard[c]) {
+            gameActive = false;  // Stop the game when someone wins
             return gameBoard[a];
         }
     }
@@ -42,12 +43,13 @@ function handlePlayerMove(index) {
         if (winner) {
             updateScore(winner);
             setTimeout(() => alert(`${winner} Wins!`), 100);
-            gameActive = false;
             return;
         }
 
-        // Delay AI move slightly
-        setTimeout(() => aiMove(), 400);
+        // AI moves only if game is still active
+        if (gameActive) {
+            setTimeout(() => aiMove(), 400);
+        }
     }
 }
 
@@ -178,5 +180,4 @@ document.getElementById("toggle-theme").addEventListener("click", () => {
     document.body.classList.toggle("light-mode");
     localStorage.setItem("darkMode", isDarkMode);
 });
-
 
