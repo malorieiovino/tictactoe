@@ -40,12 +40,6 @@ body {
     transform: scale(1.05);
 }
 
-/* Highlight Winning Cells */
-.win {
-    background-color: green !important;
-    color: white;
-    animation: blink 0.5s infinite alternate;
-}
 
 /* Blinking Effect for Winning Cells */
 @keyframes blink {
