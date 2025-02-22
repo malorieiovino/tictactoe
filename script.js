@@ -4,7 +4,6 @@ const restartBtn = document.getElementById("restart");
 const difficultySelect = document.getElementById("difficulty");
 
 let gameBoard = ["", "", "", "", "", "", "", "", ""];
-let currentPlayer = "X";
 let gameActive = true;
 
 // Load scores from localStorage
@@ -27,7 +26,8 @@ function checkWinner() {
     for (let pattern of winPatterns) {
         const [a, b, c] = pattern;
         if (gameBoard[a] && gameBoard[a] === gameBoard[b] && gameBoard[a] === gameBoard[c]) {
-            gameActive = false;  // STOP GAME ONLY WHEN SOMEONE WINS
+            gameActive = false;
+            console.log(`Game Over! Winner: ${gameBoard[a]}`);
             return gameBoard[a];
         }
     }
@@ -58,21 +58,29 @@ function handlePlayerMove(index) {
     }
 }
 
-// AI Move Function (fixed)
+// AI Move Function
 function aiMove() {
-    if (!gameActive) return; // DO NOT MOVE IF GAME IS OVER
+    if (!gameActive) return;
 
     let move = bestMove();
+    console.log(`AI picked position: ${move}`);
+
     if (move !== undefined && move !== null) {
         gameBoard[move] = "O";
         cells[move].textContent = "O";
+    } else {
+        console.error("AI couldn't find a move! Fixing...");
+        move = randomMove(); // 🔹 If Minimax fails, AI picks a random move.
+        if (move !== null) {
+            gameBoard[move] = "O";
+            cells[move].textContent = "O";
+        }
     }
 
     let winner = checkWinner();
     if (winner) {
         updateScore(winner);
         setTimeout(() => alert(`${winner} Wins!`), 100);
-        gameActive = false;
     }
 }
 
@@ -83,7 +91,7 @@ function bestMove() {
     if (difficulty === "easy") {
         return randomMove();
     } else if (difficulty === "medium") {
-        return Math.random() < 0.5 ? minimaxMove() : randomMove(); 
+        return Math.random() < 0.5 ? minimaxMove() : randomMove();
     } else {
         return minimaxMove();
     }
@@ -110,7 +118,7 @@ function minimaxMove() {
             }
         }
     }
-    return move;
+    return move !== null ? move : randomMove(); // 🔹 Ensures move is NEVER null
 }
 
 // Minimax algorithm (Hard AI logic)
@@ -163,6 +171,7 @@ restartBtn.addEventListener("click", () => {
     gameBoard = ["", "", "", "", "", "", "", "", ""];
     cells.forEach(cell => cell.textContent = "");
     gameActive = true;
+    console.log("Game restarted");
 });
 
 // Attach event listeners to all cells
