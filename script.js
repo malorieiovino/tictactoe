@@ -3,11 +3,12 @@ const cells = document.querySelectorAll(".cell");
 const restartBtn = document.getElementById("restart");
 const difficultySelect = document.getElementById("difficulty");
 
+// Initialize the board and game state
 let gameBoard = ["", "", "", "", "", "", "", "", ""];
 let currentPlayer = "X";
 let gameActive = true;
 
-// Winning combinations
+// Winning patterns
 const winPatterns = [
     [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
     [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
@@ -22,15 +23,15 @@ document.getElementById("player-score").textContent = playerWins;
 document.getElementById("ai-score").textContent = aiWins;
 
 // Function to check for a winner
-function checkWinner(board) {
+function checkWinner() {
     for (let pattern of winPatterns) {
         const [a, b, c] = pattern;
-        if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+        if (gameBoard[a] && gameBoard[a] === gameBoard[b] && gameBoard[a] === gameBoard[c]) {
             highlightWinningCells([a, b, c]);
-            return board[a];
+            return gameBoard[a];
         }
     }
-    return board.includes("") ? null : "draw";
+    return gameBoard.includes("") ? null : "draw";
 }
 
 // Function to highlight winning cells
@@ -40,9 +41,9 @@ function highlightWinningCells(cellsToHighlight) {
     });
 }
 
-// Minimax AI function
+// Minimax AI function (Hard Mode)
 function minimax(board, isMaximizing) {
-    let result = checkWinner(board);
+    let result = checkWinner();
     if (result === "X") return -1;
     if (result === "O") return 1;
     if (result === "draw") return 0;
@@ -85,13 +86,13 @@ function bestMove() {
     }
 }
 
-// Random move function (used for easy AI)
+// Random move function (Easy AI)
 function randomMove() {
     let availableMoves = gameBoard.map((cell, index) => (cell === "" ? index : null)).filter(i => i !== null);
     return availableMoves[Math.floor(Math.random() * availableMoves.length)];
 }
 
-// Minimax move function (hard AI)
+// Minimax move function (Hard AI)
 function minimaxMove() {
     return minimax(gameBoard, false) !== null ? minimax(gameBoard, false) : randomMove();
 }
@@ -104,7 +105,7 @@ cells.forEach(cell => {
             gameBoard[index] = "X";
             cell.textContent = "X";
 
-            let winner = checkWinner(gameBoard);
+            let winner = checkWinner();
             if (winner) {
                 updateScore(winner);
                 setTimeout(() => alert(`${winner} Wins!`), 100);
@@ -118,7 +119,7 @@ cells.forEach(cell => {
                 cells[aiMove].textContent = "O";
             }
 
-            winner = checkWinner(gameBoard);
+            winner = checkWinner();
             if (winner) {
                 updateScore(winner);
                 setTimeout(() => alert(`${winner} Wins!`), 100);
@@ -162,3 +163,4 @@ document.getElementById("toggle-theme").addEventListener("click", () => {
     document.body.classList.toggle("light-mode");
     localStorage.setItem("darkMode", isDarkMode);
 });
+
