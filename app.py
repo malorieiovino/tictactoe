@@ -1,21 +1,11 @@
 import streamlit as st
 import numpy as np
 
-# Initialize the Tic Tac Toe board
+# Function to initialize the game board
 def initialize_board():
     return [" "] * 9
 
-# Display the board
-def display_board(board):
-    board_html = ""
-    for i in range(3):
-        row = board[i*3:(i+1)*3]
-        board_html += f"<p style='font-size:24px; text-align:center;'>{' | '.join(row)}</p>"
-        if i < 2:
-            board_html += "<p style='text-align:center;'>-----------</p>"
-    return board_html
-
-# Check for a winner
+# Function to check for a winner
 def check_winner(board):
     win_patterns = [
         (0, 1, 2), (3, 4, 5), (6, 7, 8),  # Rows
@@ -56,7 +46,7 @@ def minimax(board, is_maximizing):
                 best_score = min(score, best_score)
         return best_score
 
-# Find the best move for AI
+# Function to find the best AI move
 def best_move(board):
     best_score = -np.inf
     move = None
@@ -71,7 +61,7 @@ def best_move(board):
     return move
 
 # Streamlit UI
-st.title("Tic Tac Toe - Play Against AI")
+st.title("🎯 Tic Tac Toe - Play Against AI 🤖")
 
 # Initialize session state
 if "board" not in st.session_state:
@@ -81,39 +71,45 @@ if "turn" not in st.session_state:
 if "winner" not in st.session_state:
     st.session_state.winner = None
 
-st.markdown(display_board(st.session_state.board), unsafe_allow_html=True)
+# Display the Tic Tac Toe board with better layout
+st.write("#### Your Turn: " + ("🟢 You (X)" if st.session_state.turn == "X" else "🤖 AI (O)"))
 
-# Check if there's a winner
+# Create 3x3 button grid
+cols = st.columns(3)
+for i in range(9):
+    row, col = divmod(i, 3)
+    with cols[col]:
+        if st.session_state.board[i] == " " and st.session_state.winner is None:
+            if st.button(" ", key=i, help=f"Place your X at {i+1}"):
+                st.session_state.board[i] = "X"
+                st.session_state.turn = "O"
+        elif st.session_state.board[i] == "X":
+            st.markdown("✅", unsafe_allow_html=True)
+        elif st.session_state.board[i] == "O":
+            st.markdown("🤖", unsafe_allow_html=True)
+
+# Check for winner
+if check_winner(st.session_state.board):
+    st.session_state.winner = check_winner(st.session_state.board)
+elif " " not in st.session_state.board:
+    st.session_state.winner = "Draw"
+
+# AI Move
+if st.session_state.turn == "O" and st.session_state.winner is None:
+    ai_move = best_move(st.session_state.board)
+    if ai_move is not None:
+        st.session_state.board[ai_move] = "O"
+        st.session_state.turn = "X"
+
+# Show Game Status
 if st.session_state.winner:
-    st.success(f"Game Over! {st.session_state.winner} wins!" if st.session_state.winner != "Draw" else "It's a draw!")
-else:
-    # Display buttons for each move
-    cols = st.columns(3)
-    for i in range(9):
-        row, col = divmod(i, 3)
-        with cols[col]:
-            if st.session_state.board[i] == " " and st.session_state.winner is None:
-                if st.button(f"{i+1}", key=i):
-                    st.session_state.board[i] = "X"
-                    st.session_state.turn = "O"
-                    # Check for winner
-                    winner = check_winner(st.session_state.board)
-                    if winner:
-                        st.session_state.winner = winner
-                    elif " " not in st.session_state.board:
-                        st.session_state.winner = "Draw"
+    if st.session_state.winner == "Draw":
+        st.warning("It's a Draw! 🤝")
+    else:
+        st.success(f"{'🟢 You (X)' if st.session_state.winner == 'X' else '🤖 AI (O)'} Wins! 🎉")
 
-    # AI Move
-    if st.session_state.turn == "O" and st.session_state.winner is None:
-        ai_move = best_move(st.session_state.board)
-        if ai_move is not None:
-            st.session_state.board[ai_move] = "O"
-            st.session_state.turn = "X"
-            # Check for winner
-            winner = check_winner(st.session_state.board)
-            if winner:
-                st.session_state.winner = winner
-            elif " " not in st.session_state.board:
-                st.session_state.winner = "Draw"
-
-st.button("Restart Game", on_click=lambda: [st.session_state.update({"board": initialize_board(), "turn": "X", "winner": None})])
+# Restart button
+if st.button("🔄 Restart Game"):
+    st.session_state.board = initialize_board()
+    st.session_state.turn = "X"
+    st.session_state.winner = None
