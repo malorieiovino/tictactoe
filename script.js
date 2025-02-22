@@ -39,6 +39,7 @@ function handlePlayerMove(index) {
     if (gameBoard[index] === "" && gameActive) {
         gameBoard[index] = "X";
         cells[index].textContent = "X";
+        console.log(`Player moved to position ${index}`);
 
         let winner = checkWinner();
         if (winner) {
@@ -47,8 +48,13 @@ function handlePlayerMove(index) {
             return;
         }
 
-        // AI moves only if game is still active
-        setTimeout(() => aiMove(), 400);
+        // 🔹 Force AI Move if game is still active
+        setTimeout(() => {
+            if (gameActive) {
+                console.log("Forcing AI move...");
+                aiMove();
+            }
+        }, 400);
     }
 }
 
