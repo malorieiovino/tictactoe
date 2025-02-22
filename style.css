@@ -46,3 +46,13 @@ button:hover {
     background-color: gray;
 }
 
+.win {
+    background-color: green !important;
+    color: white;
+    animation: blink 0.5s infinite alternate;
+}
+
+@keyframes blink {
+    from { opacity: 1; }
+    to { opacity: 0.5; }
+}
