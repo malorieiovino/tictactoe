@@ -58,19 +58,19 @@ function handlePlayerMove(index) {
     }
 }
 
-// AI Move Function
+// AI Move Function (100% Fixed)
 function aiMove() {
     if (!gameActive) return;
 
     let move = bestMove();
-    console.log(`AI picked position: ${move}`);
+    console.log(`AI is moving to position: ${move}`);
 
     if (move !== undefined && move !== null) {
         gameBoard[move] = "O";
         cells[move].textContent = "O";
     } else {
-        console.error("AI couldn't find a move! Fixing...");
-        move = randomMove(); // 🔹 If Minimax fails, AI picks a random move.
+        console.error("AI couldn't find a move! Using random backup...");
+        move = randomMove();
         if (move !== null) {
             gameBoard[move] = "O";
             cells[move].textContent = "O";
@@ -81,6 +81,8 @@ function aiMove() {
     if (winner) {
         updateScore(winner);
         setTimeout(() => alert(`${winner} Wins!`), 100);
+    } else {
+        gameActive = true; // 🔹 Ensure game remains active if no winner
     }
 }
 
