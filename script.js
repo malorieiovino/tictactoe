@@ -26,19 +26,10 @@ function checkWinner() {
     for (let pattern of winPatterns) {
         const [a, b, c] = pattern;
         if (gameBoard[a] && gameBoard[a] === gameBoard[b] && gameBoard[a] === gameBoard[c]) {
-            highlightWinningCells([a, b, c]);
-            gameActive = false; // Stop further moves
             return gameBoard[a];
         }
     }
     return gameBoard.includes("") ? null : "draw";
-}
-
-// Function to highlight winning cells
-function highlightWinningCells(cellsToHighlight) {
-    cellsToHighlight.forEach(index => {
-        cells[index].classList.add("win");  // Add highlight without animation
-    });
 }
 
 // Function to handle player move
@@ -51,10 +42,11 @@ function handlePlayerMove(index) {
         if (winner) {
             updateScore(winner);
             setTimeout(() => alert(`${winner} Wins!`), 100);
+            gameActive = false;
             return;
         }
 
-        // AI Move (only after player moves)
+        // Delay AI move slightly
         setTimeout(() => aiMove(), 400);
     }
 }
@@ -64,7 +56,7 @@ function aiMove() {
     if (!gameActive) return;
 
     let move = bestMove();
-    if (move !== undefined) {
+    if (move !== undefined && move !== null) {
         gameBoard[move] = "O";
         cells[move].textContent = "O";
     }
@@ -73,6 +65,7 @@ function aiMove() {
     if (winner) {
         updateScore(winner);
         setTimeout(() => alert(`${winner} Wins!`), 100);
+        gameActive = false;
     }
 }
 
@@ -98,7 +91,7 @@ function randomMove() {
 // Minimax move function (Hard AI)
 function minimaxMove() {
     let bestScore = -Infinity;
-    let move;
+    let move = null;
     for (let i = 0; i < 9; i++) {
         if (gameBoard[i] === "") {
             gameBoard[i] = "O";
@@ -163,7 +156,6 @@ restartBtn.addEventListener("click", () => {
     gameBoard = ["", "", "", "", "", "", "", "", ""];
     cells.forEach(cell => {
         cell.textContent = "";
-        cell.classList.remove("win");
     });
     gameActive = true;
 });
