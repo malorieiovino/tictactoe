@@ -71,19 +71,19 @@ if "turn" not in st.session_state:
 if "winner" not in st.session_state:
     st.session_state.winner = None
 
-# CSS to style the Tic Tac Toe grid properly
+# CSS for proper grid layout
 st.markdown(
     """
     <style>
     .tictactoe-container {
         display: flex;
         justify-content: center;
+        margin-top: 20px;
     }
     .tictactoe-grid {
         display: grid;
         grid-template-columns: 100px 100px 100px;
         gap: 5px;
-        justify-content: center;
     }
     .cell {
         width: 100px;
@@ -99,41 +99,48 @@ st.markdown(
         font-family: Arial, sans-serif;
         cursor: pointer;
     }
+    .cell:hover {
+        background-color: #333;
+    }
     </style>
     """,
     unsafe_allow_html=True,
 )
 
 # Show player turn
-st.write("### Your Turn: " + ("X (You)" if st.session_state.turn == "X" else "O (AI)"))
+st.write(f"### Your Turn: {'X (You)' if st.session_state.turn == 'X' else 'O (AI)'}")
 
-# Create clickable Tic Tac Toe grid
+# Create a proper 3x3 clickable Tic Tac Toe grid
+clicked_index = None
 board_html = "<div class='tictactoe-container'><div class='tictactoe-grid'>"
 
 for i in range(9):
     if st.session_state.board[i] == " " and st.session_state.winner is None:
-        # Making each cell clickable
-        if st.button(" ", key=f"cell_{i}"):
-            st.session_state.board[i] = "X"
-            st.session_state.turn = "O"
+        if st.button(" ", key=f"move_{i}"):  
+            clicked_index = i  # Capture the clicked cell
     board_html += f"<div class='cell'>{st.session_state.board[i]}</div>"
 
 board_html += "</div></div>"
 
 st.markdown(board_html, unsafe_allow_html=True)
 
-# Check for winner
-if check_winner(st.session_state.board):
-    st.session_state.winner = check_winner(st.session_state.board)
-elif " " not in st.session_state.board:
-    st.session_state.winner = "Draw"
+# Handle player move
+if clicked_index is not None:
+    st.session_state.board[clicked_index] = "X"
+    st.session_state.turn = "O"
 
-# AI Move (immediately after player's turn)
+# AI Move
 if st.session_state.turn == "O" and st.session_state.winner is None:
     ai_move = best_move(st.session_state.board)
     if ai_move is not None:
         st.session_state.board[ai_move] = "O"
         st.session_state.turn = "X"
+
+# Check for winner
+if check_winner(st.session_state.board):
+    st.session_state.winner = check_winner(st.session_state.board)
+elif " " not in st.session_state.board:
+    st.session_state.winner = "Draw"
 
 # Show game status
 if st.session_state.winner:
@@ -147,5 +154,4 @@ if st.button("Restart Game"):
     st.session_state.board = initialize_board()
     st.session_state.turn = "X"
     st.session_state.winner = None
-
 
