@@ -86,7 +86,3 @@ select {
     border-color: black;
 }
 
-.light-mode .win {
-    background-color: lightgreen !important;
-}
-
