@@ -1,13 +1,10 @@
-/* General Page Styles */
 body {
     font-family: Arial, sans-serif;
     text-align: center;
     background-color: black;
     color: white;
-    transition: background-color 0.3s, color 0.3s;
 }
 
-/* Tic Tac Toe Board */
 .board {
     display: grid;
     grid-template-columns: repeat(3, 100px);
@@ -18,7 +15,6 @@ body {
     width: 320px;
 }
 
-/* Cells (Game Squares) */
 .cell {
     width: 100px;
     height: 100px;
@@ -31,17 +27,12 @@ body {
     background-color: black;
     color: white;
     cursor: pointer;
-    transition: background-color 0.2s, transform 0.1s;
 }
 
-/* Hover Effect on Cells */
 .cell:hover {
     background-color: #333;
-    transform: scale(1.05);
 }
 
-
-/* Buttons */
 button {
     background-color: white;
     color: black;
@@ -51,38 +42,9 @@ button {
     cursor: pointer;
     margin: 10px;
     border-radius: 5px;
-    transition: background-color 0.3s, transform 0.2s;
 }
 
 button:hover {
     background-color: gray;
-    transform: scale(1.05);
-}
-
-/* Score Display */
-p {
-    font-size: 18px;
-    margin: 10px;
-}
-
-/* Dropdown Menu */
-select {
-    font-size: 16px;
-    padding: 5px;
-    margin: 10px;
-    border-radius: 5px;
-    border: none;
-}
-
-/* Light Mode Styles */
-.light-mode {
-    background-color: white;
-    color: black;
-}
-
-.light-mode .cell {
-    background-color: white;
-    color: black;
-    border-color: black;
 }
 
