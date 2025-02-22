@@ -61,7 +61,7 @@ def best_move(board):
     return move
 
 # Streamlit UI
-st.title("🎯 Tic Tac Toe - Play Against AI 🤖")
+st.title("Tic Tac Toe - Play Against AI")
 
 # Initialize session state
 if "board" not in st.session_state:
@@ -71,10 +71,10 @@ if "turn" not in st.session_state:
 if "winner" not in st.session_state:
     st.session_state.winner = None
 
-# Display the Tic Tac Toe board with better layout
-st.write("#### Your Turn: " + ("🟢 You (X)" if st.session_state.turn == "X" else "🤖 AI (O)"))
+# Display the game board using a grid
+st.write("### Your Turn: " + ("X (You)" if st.session_state.turn == "X" else "O (AI)"))
 
-# Create 3x3 button grid
+# Create a 3x3 grid for Tic Tac Toe
 cols = st.columns(3)
 for i in range(9):
     row, col = divmod(i, 3)
@@ -83,10 +83,8 @@ for i in range(9):
             if st.button(" ", key=i, help=f"Place your X at {i+1}"):
                 st.session_state.board[i] = "X"
                 st.session_state.turn = "O"
-        elif st.session_state.board[i] == "X":
-            st.markdown("✅", unsafe_allow_html=True)
-        elif st.session_state.board[i] == "O":
-            st.markdown("🤖", unsafe_allow_html=True)
+        else:
+            st.markdown(f"<div style='font-size:36px; text-align:center;'>{st.session_state.board[i]}</div>", unsafe_allow_html=True)
 
 # Check for winner
 if check_winner(st.session_state.board):
@@ -101,15 +99,15 @@ if st.session_state.turn == "O" and st.session_state.winner is None:
         st.session_state.board[ai_move] = "O"
         st.session_state.turn = "X"
 
-# Show Game Status
+# Show game status
 if st.session_state.winner:
     if st.session_state.winner == "Draw":
-        st.warning("It's a Draw! 🤝")
+        st.warning("It's a Draw!")
     else:
-        st.success(f"{'🟢 You (X)' if st.session_state.winner == 'X' else '🤖 AI (O)'} Wins! 🎉")
+        st.success(f"{st.session_state.winner} Wins!")
 
 # Restart button
-if st.button("🔄 Restart Game"):
+if st.button("Restart Game"):
     st.session_state.board = initialize_board()
     st.session_state.turn = "X"
     st.session_state.winner = None
