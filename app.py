@@ -71,20 +71,47 @@ if "turn" not in st.session_state:
 if "winner" not in st.session_state:
     st.session_state.winner = None
 
-# Display the game board using a grid
+# Create a proper grid layout
+st.markdown(
+    """
+    <style>
+    .tictactoe-grid {
+        display: grid;
+        grid-template-columns: 100px 100px 100px;
+        grid-gap: 5px;
+        justify-content: center;
+    }
+    .cell {
+        width: 100px;
+        height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 36px;
+        border: 2px solid white;
+        background-color: #1E1E1E;
+        color: white;
+        font-family: Arial, sans-serif;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+# Display the board as a structured grid
 st.write("### Your Turn: " + ("X (You)" if st.session_state.turn == "X" else "O (AI)"))
 
-# Create a 3x3 grid for Tic Tac Toe
-cols = st.columns(3)
+board_html = "<div class='tictactoe-grid'>"
 for i in range(9):
-    row, col = divmod(i, 3)
-    with cols[col]:
-        if st.session_state.board[i] == " " and st.session_state.winner is None:
-            if st.button(" ", key=i, help=f"Place your X at {i+1}"):
-                st.session_state.board[i] = "X"
-                st.session_state.turn = "O"
-        else:
-            st.markdown(f"<div style='font-size:36px; text-align:center;'>{st.session_state.board[i]}</div>", unsafe_allow_html=True)
+    if st.session_state.board[i] == " " and st.session_state.winner is None:
+        # Clicking on an empty cell places X
+        if st.button(" ", key=i):
+            st.session_state.board[i] = "X"
+            st.session_state.turn = "O"
+    board_html += f"<div class='cell'>{st.session_state.board[i]}</div>"
+board_html += "</div>"
+
+st.markdown(board_html, unsafe_allow_html=True)
 
 # Check for winner
 if check_winner(st.session_state.board):
@@ -92,7 +119,7 @@ if check_winner(st.session_state.board):
 elif " " not in st.session_state.board:
     st.session_state.winner = "Draw"
 
-# AI Move
+# AI Move (immediately after player's turn)
 if st.session_state.turn == "O" and st.session_state.winner is None:
     ai_move = best_move(st.session_state.board)
     if ai_move is not None:
@@ -111,3 +138,4 @@ if st.button("Restart Game"):
     st.session_state.board = initialize_board()
     st.session_state.turn = "X"
     st.session_state.winner = None
+
