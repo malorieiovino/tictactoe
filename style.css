@@ -40,8 +40,12 @@ body {
     transform: scale(1.05);
 }
 
+.win {
+    background-color: green !important;
+    color: white;
+    animation: blink 0.5s infinite alternate;
+}
 
-/* Blinking Effect for Winning Cells */
 @keyframes blink {
     from { opacity: 1; }
     to { opacity: 0.5; }
