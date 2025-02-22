@@ -27,7 +27,7 @@ function checkWinner() {
     for (let pattern of winPatterns) {
         const [a, b, c] = pattern;
         if (gameBoard[a] && gameBoard[a] === gameBoard[b] && gameBoard[a] === gameBoard[c]) {
-            gameActive = false;
+            gameActive = false;  // STOP GAME ONLY WHEN SOMEONE WINS
             return gameBoard[a];
         }
     }
@@ -47,13 +47,14 @@ function handlePlayerMove(index) {
             return;
         }
 
+        // AI moves only if game is still active
         setTimeout(() => aiMove(), 400);
     }
 }
 
-// AI Move Function (based on difficulty selection)
+// AI Move Function (fixed)
 function aiMove() {
-    if (!gameActive) return;
+    if (!gameActive) return; // DO NOT MOVE IF GAME IS OVER
 
     let move = bestMove();
     if (move !== undefined && move !== null) {
@@ -74,11 +75,11 @@ function bestMove() {
     let difficulty = difficultySelect.value;
 
     if (difficulty === "easy") {
-        return randomMove();  // AI picks random move
+        return randomMove();
     } else if (difficulty === "medium") {
-        return Math.random() < 0.5 ? minimaxMove() : randomMove(); // 50% chance of random move
+        return Math.random() < 0.5 ? minimaxMove() : randomMove(); 
     } else {
-        return minimaxMove();  // Always uses Minimax
+        return minimaxMove();
     }
 }
 
@@ -106,7 +107,7 @@ function minimaxMove() {
     return move;
 }
 
-// Minimax algorithm (AI decision-making)
+// Minimax algorithm (Hard AI logic)
 function minimax(board, isMaximizing) {
     let result = checkWinner();
     if (result === "X") return -1;
