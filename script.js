@@ -13,15 +13,22 @@ const winPatterns = [
     [0, 4, 8], [2, 4, 6] // Diagonals
 ];
 
-// Function to check for a winner
 function checkWinner(board) {
     for (let pattern of winPatterns) {
         const [a, b, c] = pattern;
         if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+            highlightWinningCells([a, b, c]);  // Highlight winning cells
             return board[a];
         }
     }
     return board.includes("") ? null : "draw";
+}
+
+// Function to highlight winning cells
+function highlightWinningCells(cellsToHighlight) {
+    cellsToHighlight.forEach(index => {
+        cells[index].classList.add("win");
+    });
 }
 
 // Minimax AI function
