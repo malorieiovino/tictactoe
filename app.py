@@ -71,14 +71,14 @@ if "turn" not in st.session_state:
 if "winner" not in st.session_state:
     st.session_state.winner = None
 
-# Create a proper grid layout
+# CSS to style the Tic Tac Toe grid
 st.markdown(
     """
     <style>
     .tictactoe-grid {
         display: grid;
         grid-template-columns: 100px 100px 100px;
-        grid-gap: 5px;
+        gap: 5px;
         justify-content: center;
     }
     .cell {
@@ -88,10 +88,12 @@ st.markdown(
         align-items: center;
         justify-content: center;
         font-size: 36px;
+        font-weight: bold;
         border: 2px solid white;
         background-color: #1E1E1E;
         color: white;
         font-family: Arial, sans-serif;
+        cursor: pointer;
     }
     </style>
     """,
@@ -101,11 +103,12 @@ st.markdown(
 # Display the board as a structured grid
 st.write("### Your Turn: " + ("X (You)" if st.session_state.turn == "X" else "O (AI)"))
 
+# Create clickable Tic Tac Toe board using empty labels
 board_html = "<div class='tictactoe-grid'>"
 for i in range(9):
     if st.session_state.board[i] == " " and st.session_state.winner is None:
-        # Clicking on an empty cell places X
-        if st.button(" ", key=i):
+        button = st.button(" ", key=f"cell_{i}")  # Unique key for each cell
+        if button:
             st.session_state.board[i] = "X"
             st.session_state.turn = "O"
     board_html += f"<div class='cell'>{st.session_state.board[i]}</div>"
